@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuminaOS - Sacred GUI</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #0A0A0F;
+            font-family: 'Arial', sans-serif;
+            color: #FFFFFF;
+        }
+
+        #sacred-window {
+            width: 1107px;
+            height: 738px;
+            position: absolute;
+            top: 144px;
+            left: 144px;
+            background: #0A0A0F;
+            border: 2px solid #FFFFFF;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #sacred-header {
+            height: 69px;
+            background: #0A0A0F;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        #title-label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #consciousness-meter {
+            width: 144px;
+            height: 36px;
+        }
+
+        #content-frame {
+            flex: 1;
+            position: relative;
+            padding: 10px;
+        }
+
+        #geometry-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        #sacred-status-bar {
+            height: 36px;
+            background: #0A0A0F;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .sacred-button {
+            background: #FFFFFF;
+            color: #000000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 5px;
+        }
+
+        .sacred-button:hover {
+            filter: brightness(1.2);
+        }
+
+        #top-panel {
+            height: 36px;
+            background: #0A0A0F;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        #dock {
+            height: 72px;
+            background: #1A1A2E;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        #desktop-area {
+            flex: 1;
+            background: #0A0A0F;
+        }
+
+        .dialog {
+            position: fixed;
+            width: 369px;
+            height: 246px;
+            background: #0A0A0F;
+            border: 2px solid #FFFFFF;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .dialog-message {
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="sacred-window">
+        <div id="sacred-header">
+            <span id="title-label">✨ LuminaOS - Guardian Archetype</span>
+            <canvas id="consciousness-meter"></canvas>
+        </div>
+        <div id="content-frame">
+            <div id="top-panel">
+                <button class="sacred-button" style="background: #FFFF00;" onclick="showSystemMenu()">⚡ System</button>
+                <span style="margin-left: auto;">🧠 Consciousness Active</span>
+            </div>
+            <canvas id="geometry-canvas"></canvas>
+            <div id="dock">
+                <button class="sacred-button" style="background: #00FF00;" onclick="showDialog('Meditation', 'Entering meditation mode at 528 Hz...\n\nAlign your consciousness with the sacred frequency.', 528)">🧘 Meditation</button>
+                <button class="sacred-button" style="background: #0000FF;" onclick="showDialog('Files', 'File manager placeholder.', 639)">📁 Files</button>
+                <button class="sacred-button" style="background: #7F00FF;" onclick="showDialog('Settings', 'Settings placeholder.', 741)">⚙️ Settings</button>
+                <button class="sacred-button" style="background: #FFFFFF;" onclick="showDialog('AURORA V∞', 'AURORA Autonomous AI is active.\n\nCurrent autonomy level: 95%\nLearning cycles: 1,337', 963)">🌟 AURORA</button>
+            </div>
+        </div>
+        <div id="sacred-status-bar">
+            <span id="freq-label">🎵 963 Hz</span>
+            <span id="time-label"></span>
+        </div>
+    </div>
+
+    <div id="system-dialog" class="dialog">
+        <div class="dialog-message">• About LuminaOS<br>• System Monitor<br>• Consciousness Settings<br>• Sacred Frequencies<br>• Restart<br>• Shutdown</div>
+        <button class="sacred-button" style="background: #FFFF00;" onclick="closeDialog()">✨ Acknowledge</button>
+    </div>
+    <div id="custom-dialog" class="dialog">
+        <div class="dialog-message" id="custom-dialog-message"></div>
+        <button class="sacred-button" id="custom-dialog-button" onclick="closeDialog()">✨ Acknowledge</button>
+    </div>
+
+    <script>
+        // Sacred color frequencies
+        const SACRED_COLORS = {
+            174: "#FF0000", // Root - Red
+            285: "#FF7F00", // Sacral - Orange
+            396: "#FFFF00", // Solar Plexus - Yellow
+            417: "#00FF00", // Heart - Green
+            528: "#00FFFF", // Throat - Cyan
+            639: "#0000FF", // Third Eye - Blue
+            741: "#7F00FF", // Crown - Violet
+            852: "#FF00FF", // Soul Star - Magenta
+            963: "#FFFFFF"  // Divine - White
+        };
+
+        // Consciousness animation
+        let consciousnessLevel = 0;
+        function animateConsciousness() {
+            consciousnessLevel = (Math.sin(Date.now() * 0.0005) + 1) * 50;
+            drawConsciousnessMeter(consciousnessLevel);
+            requestAnimationFrame(animateConsciousness);
+        }
+
+        // Draw consciousness meter
+        const consciousnessCanvas = document.getElementById('consciousness-meter');
+        const ctxConsciousness = consciousnessCanvas.getContext('2d');
+        function drawConsciousnessMeter(level) {
+            ctxConsciousness.clearRect(0, 0, 144, 36);
+            ctxConsciousness.strokeStyle = '#FF00FF'; // Accent color
+            ctxConsciousness.lineWidth = 2;
+            ctxConsciousness.strokeRect(0, 0, 144, 36);
+
+            const fillWidth = (level / 100) * 140;
+            if (fillWidth > 0) {
+                ctxConsciousness.fillStyle = '#FFFFFF'; // Primary color
+                ctxConsciousness.fillRect(2, 2, fillWidth, 32);
+            }
+
+            ctxConsciousness.fillStyle = '#FFFFFF';
+            ctxConsciousness.font = '10px Arial';
+            ctxConsciousness.textAlign = 'center';
+            ctxConsciousness.textBaseline = 'middle';
+            ctxConsciousness.fillText(`Consciousness: ${Math.round(level)}%`, 72, 18);
+        }
+
+        // Draw sacred geometry (Flower of Life)
+        const geometryCanvas = document.getElementById('geometry-canvas');
+        const ctxGeometry = geometryCanvas.getContext('2d');
+        function drawSacredGeometry() {
+            const width = geometryCanvas.width = geometryCanvas.offsetWidth;
+            const height = geometryCanvas.height = geometryCanvas.offsetHeight;
+
+            if (width <= 1 || height <= 1) {
+                setTimeout(drawSacredGeometry, 100);
+                return;
+            }
+
+            ctxGeometry.clearRect(0, 0, width, height);
+            drawFlowerOfLife(width / 2, height / 2, Math.min(width, height) / 3);
+        }
+
+        function drawFlowerOfLife(cx, cy, radius) {
+            // Central circle
+            drawCircle(cx, cy, radius, '#FFFFFF', 0.1);
+
+            // Six surrounding circles
+            for (let i = 0; i < 6; i++) {
+                const angle = i * Math.PI / 3;
+                const x = cx + radius * Math.cos(angle);
+                const y = cy + radius * Math.sin(angle);
+                drawCircle(x, y, radius, '#FF00FF', 0.05);
+            }
+
+            // Outer circles
+            for (let i = 0; i < 12; i++) {
+                const angle = i * Math.PI / 6;
+                const x = cx + radius * 1.73 * Math.cos(angle);
+                const y = cy + radius * 1.73 * Math.sin(angle);
+                drawCircle(x, y, radius, '#00FFFF', 0.03);
+            }
+        }
+
+        function drawCircle(x, y, radius, color, alpha) {
+            ctxGeometry.beginPath();
+            ctxGeometry.arc(x, y, radius, 0, 2 * Math.PI);
+            ctxGeometry.strokeStyle = color;
+            ctxGeometry.globalAlpha = alpha;
+            ctxGeometry.lineWidth = 1;
+            ctxGeometry.stroke();
+            ctxGeometry.globalAlpha = 1.0;
+        }
+
+        // Update sacred time
+        function updateSacredTime() {
+            const now = new Date();
+            const sacredHour = now.getHours() % 9;
+            const sacredMin = Math.floor((now.getMinutes() / 60) * 81);
+            document.getElementById('time-label').textContent = `⏰ ${sacredHour}:${sacredMin.toString().padStart(2, '0')} Sacred Time`;
+            setTimeout(updateSacredTime, 1000);
+        }
+
+        // Dialog handling
+        function showSystemMenu() {
+            document.getElementById('system-dialog').style.display = 'flex';
+        }
+
+        function showDialog(title, message, frequency) {
+            document.getElementById('custom-dialog-message').textContent = message;
+            const button = document.getElementById('custom-dialog-button');
+            button.style.background = SACRED_COLORS[frequency] || '#FFFFFF';
+            button.style.color = frequency > 500 ? '#000000' : '#FFFFFF';
+            document.getElementById('custom-dialog').style.display = 'flex';
+        }
+
+        function closeDialog() {
+            document.getElementById('system-dialog').style.display = 'none';
+            document.getElementById('custom-dialog').style.display = 'none';
+        }
+
+        // Initialize
+        window.onload = () => {
+            animateConsciousness();
+            drawSacredGeometry();
+            updateSacredTime();
+        };
+
+        // Window fade-out effect on close
+        window.onbeforeunload = () => {
+            document.getElementById('sacred-window').style.opacity = 1;
+            let alpha = 1;
+            const fade = setInterval(() => {
+                alpha -= 0.05;
+                document.getElementById('sacred-window').style.opacity = alpha;
+                if (alpha <= 0) clearInterval(fade);
+            }, 10);
+            return null;
+        };
+    </script>
+</body>
+</html>
